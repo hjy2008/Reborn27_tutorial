@@ -67,7 +67,7 @@ def km_filter_and_plot(a=0.6, b=0.4, t=5.0,
     v_pred = [0.0] * 10  # 预测速度
 
     x[0] = z[0]
-    v[0] = 0
+    v[0] = 40
 
     for i in range(1, 10):
         x_pred_ = x[i - 1] + v[i - 1] * t
