@@ -1,22 +1,21 @@
-# 1. 指定需要的 CMake 最低版本
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.9)
+project(armor_pnp)
 
-# 2. 声明项目名称及使用的语言
-project(hello_world VERSION 1.0 LANGUAGES CXX)
-
-# 3. 设置 C++ 标准（等同于 g++ 的 -std=c++17）
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
 
-# 4. 指定头文件搜索路径
-include_directories(${PROJECT_SOURCE_DIR}/include)
+find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs videoio highgui calib3d dnn)
 
-# 5. 编译库文件（静态库和动态库的区别可以自行搜索）
-add_library(hello SHARED src/hello.cpp)
-# add_library(hello STATIC src/hello.cpp)
+add_executable(armor_pnp
+        src/main.cpp
+        src/armor_detector.cpp
+        src/tracker.cpp
+        src/pnp_solver.cpp
+        src/visualizer.cpp
+)
 
-# 6. 创建主程序
-add_executable(main_app main.cpp)
-
-# 7. 将 hello 库链接到主程序（等同于 g++ 的 -l）
-target_link_libraries(main_app PRIVATE hello)
+target_include_directories(armor_pnp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(armor_pnp ${OpenCV_LIBS})
