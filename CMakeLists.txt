@@ -1,22 +1,32 @@
-# 1. 指定需要的 CMake 最低版本
-cmake_minimum_required(VERSION 3.10)
+# 作业六 —— 卡尔曼滤波（装甲板位姿滤波）
+#
+# 原来的 `cmake_minimum_required(VERSION 4.3)` 是不存在的版本号，
+# 会让任何人 clone 下来在 configure 阶段就失败，这里改成实际存在且够用的 3.16。
+cmake_minimum_required(VERSION 3.16)
 
-# 2. 声明项目名称及使用的语言
-project(hello_world VERSION 1.0 LANGUAGES CXX)
+project(l6 LANGUAGES CXX)
 
-# 3. 设置 C++ 标准（等同于 g++ 的 -std=c++17）
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# 4. 指定头文件搜索路径
-include_directories(${PROJECT_SOURCE_DIR}/include)
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
 
-# 5. 编译库文件（静态库和动态库的区别可以自行搜索）
-add_library(hello SHARED src/hello.cpp)
-# add_library(hello STATIC src/hello.cpp)
+add_executable(l6
+    main.cpp
+    src/kalman.cpp
+    src/data.cpp
+)
 
-# 6. 创建主程序
-add_executable(main_app main.cpp)
+target_include_directories(l6 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# 7. 将 hello 库链接到主程序（等同于 g++ 的 -l）
-target_link_libraries(main_app PRIVATE hello)
+if(MSVC)
+    target_compile_options(l6 PRIVATE /W4 /utf-8)
+else()
+    target_compile_options(l6 PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+# 可执行文件留在构建目录里（默认行为），不要写回源码目录：
+# 源码目录里的 ./l6 由 run.sh 生成，两条构建路径互不干扰。
